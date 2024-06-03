@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import Section from '../section'
 
 import { Item, Items, Action, Modal, ModalContent } from './styles'
@@ -8,13 +10,8 @@ import hogwasts_3 from '../../assets/images/game-info-panel-03.jpg'
 import play from '../../assets/images/play.png'
 import zoom from '../../assets/images/zoom.png'
 import fechar from '../../assets/images/fechar.png'
-import { useState } from 'react'
-import { isJsxFragment } from 'typescript'
 
-interface GalleryItem {
-  type: 'image' | 'video'
-  url: string
-}
+import { GalleryItem } from '../../pages/home'
 
 const mock: GalleryItem[] = [
   {
