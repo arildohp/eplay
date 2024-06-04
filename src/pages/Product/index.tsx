@@ -4,33 +4,45 @@ import Section from '../../components/section'
 
 import Gallery from '../../components/Gallery'
 import hogwasts_3 from '../../assets/images/game-info-panel-03.jpg'
+import { useEffect, useState } from 'react'
+import { Game } from '../home'
 
 const Product = () => {
   const { id } = useParams()
 
+  const [game, setGame] = useState<Game>()
+
+  useEffect(() => {
+    fetch(`https://fake-api-tau.vercel.app/api/eplay/jogos/${id}`)
+      .then((res) => res.json())
+      .then((res) => setGame(res))
+  }, [id])
+
+  if (!game) {
+    return <h3>Carregando...</h3>
+  }
+
   return (
     <>
-      <Hero />
+      <Hero game={game} />
       <Section title={'Sobre o jogo'} background={'black'}>
-        <p>
-          Hogwarts Legacy é um RPG de ação e mundo aberto ambientado no mundo
-          apresentado nos livros de Harry Potter. Agora você pode assumir o
-          controle da ação e criar sua própria aventura. Descubra a sensação de
-          viver em Hogwarts enquanto faz aliados, luta contra bruxos das trevas
-          e, por fim, decide o destino do mundo bruxo. Seu legado é o que você
-          faz dele.
-        </p>
+        <p>{game.description}</p>
       </Section>
       <Section title={'Mais detalhes'} background={'gray'}>
         <p>
-          <b>Desenvolvedor:</b> Avalanche Software <br />
-          <b>Editora: </b>Warner Bros. Games <br />
-          <b>Data de lançamento </b>10/02/23 <br />
-          <b>Plataforma:</b> PS5, XBOX, PC <br />
-          <b>Idiomas:</b> português, espanhol, inglês, alemão
+          <b>Desenvolvedor:</b> {game.details.developer} <br />
+          <b>Editora: </b>
+          {game.details.publisher} <br />
+          <b>Plataforma:</b> {game.details.system} <br />
+          <b>Idiomas:</b> O jogo oferece suporte a diversos idiomas, incluindo{' '}
+          {game.details.languages.join(', ')}
         </p>
       </Section>
-      <Gallery name="jogo teste" defaultCover={hogwasts_3} />
+      <Gallery
+        name={game.name}
+        defaultCover={game.media.cover}
+        items={game.media.gallery}
+      />
     </>
   )
 }
