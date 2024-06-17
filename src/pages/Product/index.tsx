@@ -5,7 +5,7 @@ import Section from '../../components/section'
 import Gallery from '../../components/Gallery'
 import hogwasts_3 from '../../assets/images/game-info-panel-03.jpg'
 import { useEffect, useState } from 'react'
-import { Game } from '../home'
+import { Game } from '../Home'
 
 const Product = () => {
   const { id } = useParams()

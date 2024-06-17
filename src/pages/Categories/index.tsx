@@ -1,5 +1,5 @@
 import ProductsList from '../../components/ProductsList'
-import { Game } from '../home'
+import { Game } from '../Home'
 
 import resident from '../../assets/images/resident.png'
 import diablo from '../../assets/images/diablo.png'

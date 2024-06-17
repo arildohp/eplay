@@ -1,4 +1,4 @@
-import { Game } from '../../pages/home'
+import { Game } from '../../pages/Home'
 import { Button } from '../Button'
 import Tag from '../Tag'
 import { formataPreco } from '../ProductsList'
