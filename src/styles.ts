@@ -33,7 +33,7 @@ export const GlobalCss = createGlobalStyle`
     margin: 0 auto;
 
     @media (max-width: ${breakpoints.desktop}) {
-    max-width: 60%;
+    max-width: 80%;
     }
    }
 `
