@@ -44,42 +44,50 @@ const Checkout = () => {
         .string()
         .email('E-mail inválido')
         .required('Campo obrigatorio'),
-      confirmDeliveryEmai: yup
+      confirmDeliveryEmail: yup
         .string()
-        .email('E-mail inválido')
+        .oneOf([yup.ref('deliveryEmail')], 'os e-mails são diferentes')
         .required('Campo obrigatorio'),
       cardOwner: yup
         .string()
-        .min(5, 'o nome precisa ter pelo menos 5 caracteres')
-        .required('Campo obrigatorio'),
+        .when((values, schema) =>
+          payWithCard ? schema.required('O campo é obrigatorio') : schema
+        ),
       cpfcardOwner: yup
         .string()
-        .min(5, 'o nome precisa ter pelo menos 5 caracteres')
-        .required('Campo obrigatorio'),
+        .when((values, schema) =>
+          payWithCard ? schema.required('O campo é obrigatorio') : schema
+        ),
       cardDisplayName: yup
         .string()
-        .min(5, 'o nome precisa ter pelo menos 5 caracteres')
-        .required('Campo obrigatorio'),
+        .when((values, schema) =>
+          payWithCard ? schema.required('O campo é obrigatorio') : schema
+        ),
       cardNumber: yup
         .string()
-        .min(5, 'o nome precisa ter pelo menos 5 caracteres')
-        .required('Campo obrigatorio'),
+        .when((values, schema) =>
+          payWithCard ? schema.required('O campo é obrigatorio') : schema
+        ),
       expireMonth: yup
         .string()
-        .min(5, 'o nome precisa ter pelo menos 5 caracteres')
-        .required('Campo obrigatorio'),
+        .when((values, schema) =>
+          payWithCard ? schema.required('O campo é obrigatorio') : schema
+        ),
       expiresYear: yup
         .string()
-        .min(5, 'o nome precisa ter pelo menos 5 caracteres')
-        .required('Campo obrigatorio'),
+        .when((values, schema) =>
+          payWithCard ? schema.required('O campo é obrigatorio') : schema
+        ),
       cardCode: yup
         .string()
-        .min(5, 'o nome precisa ter pelo menos 5 caracteres')
-        .required('Campo obrigatorio'),
+        .when((values, schema) =>
+          payWithCard ? schema.required('O campo é obrigatorio') : schema
+        ),
       installments: yup
         .string()
-        .min(5, 'o nome precisa ter pelo menos 5 caracteres')
-        .required('Campo obrigatorio')
+        .when((values, schema) =>
+          payWithCard ? schema.required('O campo é obrigatorio') : schema
+        )
     }),
     onSubmit: (values) => {
       console.log(values)
@@ -124,7 +132,14 @@ const Checkout = () => {
             </InputGroup>
             <InputGroup>
               <label htmlFor="cpf">CPF</label>
-              <input id="cpf" type="text" name="cpf" value={form.values.cpf} />
+              <input
+                id="cpf"
+                type="text"
+                name="cpf"
+                value={form.values.cpf}
+                onChange={form.handleChange}
+                onBlur={form.handleBlur}
+              />
               <small>{getErrorMessage('cpf', form.errors.cpf)}</small>
             </InputGroup>
           </Row>
@@ -195,7 +210,6 @@ const Checkout = () => {
                     <small>
                       {getErrorMessage('cardOwner', form.errors.cardOwner)}
                     </small>
-                    confirmeDeliveryEmail
                   </InputGroup>
                   <InputGroup>
                     <label htmlFor="cpfcardOwner">
@@ -211,7 +225,7 @@ const Checkout = () => {
                     />
                     <small>
                       {getErrorMessage(
-                        'cpfCardOwner',
+                        'cpfcardOwner',
                         form.errors.cpfcardOwner
                       )}
                     </small>
@@ -268,13 +282,13 @@ const Checkout = () => {
                     <input
                       id="expiresYear"
                       type="text"
-                      name="expireYear"
+                      name="expiresYear"
                       value={form.values.expiresYear}
                       onChange={form.handleChange}
                       onBlur={form.handleBlur}
                     />
                     <small>
-                      {getErrorMessage('expireYears', form.errors.expiresYear)}
+                      {getErrorMessage('expiresYear', form.errors.expiresYear)}
                     </small>
                   </InputGroup>
                   <InputGroup maxWidth="48px">
