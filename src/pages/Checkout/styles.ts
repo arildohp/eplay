@@ -39,6 +39,10 @@ export const InputGroup = styled.div<InputGroupProps>`
     padding: 0 8px;
     width: 100%;
   }
+
+  &.error {
+    border: 1px solid red;
+  }
 `
 
 export const TabButton = styled.button<TabButtonProps>`
