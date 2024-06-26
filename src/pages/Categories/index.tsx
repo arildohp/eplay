@@ -8,11 +8,7 @@ import {
   useGetSimulationGamesQuery,
   useGetSportGamesQuery
 } from '../../services/api'
-import { useEffect, useState } from 'react'
 
-const promocoes: Game[] = []
-
-const emBreve: Game[] = []
 const Categories = () => {
   const { data: actionGames } = useGetActionGamesQuery()
   const { data: fightGames } = useGetFightGamesQuery()

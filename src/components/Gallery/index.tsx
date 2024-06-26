@@ -2,31 +2,13 @@ import { useState } from 'react'
 
 import Section from '../section'
 
-import { Item, Items, Action, Modal, ModalContent } from './styles'
-
-import hogwasts_1 from '../../assets/images/game-info-2.jpg'
-import hogwasts_2 from '../../assets/images/game-info-panel-02.jpg'
-import hogwasts_3 from '../../assets/images/game-info-panel-03.jpg'
 import play from '../../assets/images/play.png'
 import zoom from '../../assets/images/zoom.png'
 import fechar from '../../assets/images/fechar.png'
 
 import { GalleryItem } from '../../pages/Home'
+import { Item, Items, Action, Modal, ModalContent } from './styles'
 
-const mock: GalleryItem[] = [
-  {
-    type: 'image',
-    url: hogwasts_1
-  },
-  {
-    type: 'image',
-    url: hogwasts_2
-  },
-  {
-    type: 'video',
-    url: 'https://www.youtube.com/embed/78CP8na1Fpo?si=FrlDLq7NTgXuKeay'
-  }
-]
 type Props = {
   defaultCover: string
   name: string
