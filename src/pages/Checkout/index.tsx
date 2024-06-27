@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
+import { useSelector } from 'react-redux'
+import { Navigate } from 'react-router-dom'
 
 import { Button } from '../../components/Button'
 import Card from '../../components/Card'
@@ -12,9 +14,22 @@ import creditCard from '../../assets/images/cartao.png'
 
 import { usePurchaseMutation } from '../../services/api'
 
+import { RootReducer } from '../../store'
+import { getTotalPrice, parseToBrl } from '../../utils'
+
+type Installment = {
+  quantaty: number
+  amount: number
+  formatTedAmount: string
+}
+
 const Checkout = () => {
   const [payWithCard, setPayWithCard] = useState(false)
   const [purchase, { data, isSuccess }] = usePurchaseMutation()
+  const { items } = useSelector((state: RootReducer) => state.cart)
+  const [installments, setInstallMents] = useState<Installment[]>([])
+
+  const totalPrice = getTotalPrice(items)
 
   const form = useFormik({
     initialValues: {
@@ -140,6 +155,27 @@ const Checkout = () => {
     return hasError
   }
 
+  useEffect(() => {
+    const calculateInstallments = () => {
+      const installmentsArray: Installment[] = []
+      for (let i = 1; i <= 6; i++) {
+        installmentsArray.push({
+          quantaty: i,
+          amount: totalPrice / i,
+          formatTedAmount: parseToBrl(totalPrice / i)
+        })
+      }
+      return installmentsArray
+    }
+    if (totalPrice > 0) {
+      setInstallMents(calculateInstallments())
+    }
+  }, [totalPrice])
+
+  if (items.length === 0) {
+    return <Navigate to="/" />
+  }
+
   return (
     <div className="container">
       {isSuccess ? (
@@ -259,6 +295,7 @@ const Checkout = () => {
               <S.TabButton
                 isActive={!payWithCard}
                 onClick={() => setPayWithCard(false)}
+                type="button"
               >
                 <img src={barCode} alt="Boleto" />
                 Boleto bancário
@@ -266,6 +303,7 @@ const Checkout = () => {
               <S.TabButton
                 isActive={payWithCard}
                 onClick={() => setPayWithCard(true)}
+                type="button"
               >
                 <img src={creditCard} alt="Cartão de crédito" />
                 Cartão de crédito
@@ -392,8 +430,12 @@ const Checkout = () => {
                             checkInputHasError('installments') ? 'error' : ''
                           }
                         >
-                          <option value="">1x de R$200,00</option>
-                          <option value="">2x de R$100,00</option>
+                          {installments.map((installment) => (
+                            <option key={installment.quantaty}>
+                              {installment.quantaty}x de{' '}
+                              {installment.formatTedAmount}
+                            </option>
+                          ))}
                         </select>
                       </S.InputGroup>
                     </S.Row>
@@ -411,7 +453,7 @@ const Checkout = () => {
           </Card>
           <Button
             onClick={form.handleSubmit}
-            type="button"
+            type="submit"
             title=" Clique aqui para finalizar a compra"
           >
             Finalizar compra
