@@ -3,6 +3,7 @@ import * as yup from 'yup'
 import { useFormik } from 'formik'
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
+import InputMask from 'react-input-mask'
 
 import { Button } from '../../components/Button'
 import Card from '../../components/Card'
@@ -25,7 +26,7 @@ type Installment = {
 
 const Checkout = () => {
   const [payWithCard, setPayWithCard] = useState(false)
-  const [purchase, { data, isSuccess }] = usePurchaseMutation()
+  const [purchase, { data, isSuccess, isLoading }] = usePurchaseMutation()
   const { items } = useSelector((state: RootReducer) => state.cart)
   const [installments, setInstallMents] = useState<Installment[]>([])
 
@@ -105,7 +106,7 @@ const Checkout = () => {
           payWithCard ? schema.required('O campo é obrigatorio') : schema
         ),
       installments: yup
-        .string()
+        .number()
         .when((values, schema) =>
           payWithCard ? schema.required('O campo é obrigatorio') : schema
         )
@@ -121,7 +122,7 @@ const Checkout = () => {
           email: values.deliveryEmail
         },
         payment: {
-          installments: 1,
+          installments: values.installments,
           card: {
             active: payWithCard,
             code: Number(values.cardCode),
@@ -132,8 +133,8 @@ const Checkout = () => {
               name: values.cardOwner
             },
             expires: {
-              month: 1,
-              year: 2024
+              month: Number(values.expireMonth),
+              year: Number(values.expiresYear)
             }
           }
         },
@@ -178,7 +179,7 @@ const Checkout = () => {
 
   return (
     <div className="container">
-      {isSuccess ? (
+      {isSuccess && data ? (
         <Card title="Muito obrigado">
           <>
             <p>
@@ -242,7 +243,7 @@ const Checkout = () => {
                 </S.InputGroup>
                 <S.InputGroup>
                   <label htmlFor="cpf">CPF</label>
-                  <input
+                  <InputMask
                     id="cpf"
                     type="text"
                     name="cpf"
@@ -250,6 +251,7 @@ const Checkout = () => {
                     onChange={form.handleChange}
                     onBlur={form.handleBlur}
                     className={checkInputHasError('cpf') ? 'error' : ''}
+                    mask="999.999.999-99"
                   />
                 </S.InputGroup>
               </S.Row>
@@ -332,7 +334,7 @@ const Checkout = () => {
                         <label htmlFor="cpfcardOwner">
                           CPF do titular do cartão
                         </label>
-                        <input
+                        <InputMask
                           id="cpfcardOwner"
                           type="text"
                           name="cpfcardOwner"
@@ -342,6 +344,7 @@ const Checkout = () => {
                           className={
                             checkInputHasError('cpfcardOwner') ? 'error' : ''
                           }
+                          mask="999.999.999-99"
                         />
                       </S.InputGroup>
                     </S.Row>
@@ -362,7 +365,7 @@ const Checkout = () => {
                       </S.InputGroup>
                       <S.InputGroup>
                         <label htmlFor="cardNumber">Numero do cartão</label>
-                        <input
+                        <InputMask
                           id="cardNumber"
                           type="number"
                           name="cardNumber"
@@ -372,11 +375,12 @@ const Checkout = () => {
                           className={
                             checkInputHasError('cardNumber') ? 'error' : ''
                           }
+                          mask="9999 9999 9999 9999"
                         />
                       </S.InputGroup>
                       <S.InputGroup maxWidth="123px">
                         <label htmlFor="expireMonth">Mês do vencimento </label>
-                        <input
+                        <InputMask
                           id="expireMonth"
                           type="text"
                           name="expireMonth"
@@ -386,11 +390,12 @@ const Checkout = () => {
                           className={
                             checkInputHasError('expireMonth') ? 'error' : ''
                           }
+                          mask="99"
                         />
                       </S.InputGroup>
                       <S.InputGroup maxWidth="123px">
                         <label htmlFor="expiresYear">Ano de vencimento </label>
-                        <input
+                        <InputMask
                           id="expiresYear"
                           type="text"
                           name="expiresYear"
@@ -400,11 +405,12 @@ const Checkout = () => {
                           className={
                             checkInputHasError('expiresYear') ? 'error' : ''
                           }
+                          mask="99"
                         />
                       </S.InputGroup>
                       <S.InputGroup maxWidth="48px">
                         <label htmlFor="cardCode">CVV </label>
-                        <input
+                        <InputMask
                           id="cardCode"
                           type="text"
                           name="cardCode"
@@ -414,6 +420,7 @@ const Checkout = () => {
                           className={
                             checkInputHasError('cardCode') ? 'error' : ''
                           }
+                          mask="999"
                         />
                       </S.InputGroup>
                     </S.Row>
@@ -442,10 +449,12 @@ const Checkout = () => {
                   </>
                 ) : (
                   <p>
-                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. It
-                    Itaque Itaque Itaque Itaque excepturi animi similique
-                    consequatur, molestias quasi doloribus laudantium nulla
-                    distinctio nostrum libero ipsum amet
+                    Ao optar por essa forma de pagamento, é importante lembrar
+                    que a confirmação pode levar ate 3 dias uteis, devido aos
+                    prazos estabelecidos pelas instituições financeiras.
+                    Portanto, a liberação do código de ativação do jogo
+                    adquirido ocorrerá somente após a aprovação do pagamento do
+                    boleto.
                   </p>
                 )}
               </div>
@@ -455,8 +464,9 @@ const Checkout = () => {
             onClick={form.handleSubmit}
             type="submit"
             title=" Clique aqui para finalizar a compra"
+            desabled={isLoading}
           >
-            Finalizar compra
+            {isLoading ? 'Finalizando compra...' : 'Finalizar compra'}
           </Button>
         </form>
       )}
