@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
 import InputMask from 'react-input-mask'
 
@@ -16,6 +16,8 @@ import creditCard from '../../assets/images/cartao.png'
 import { usePurchaseMutation } from '../../services/api'
 
 import { RootReducer } from '../../store'
+import { clear } from '../../store/reducers/cart'
+
 import { getTotalPrice, parseToBrl } from '../../utils'
 
 type Installment = {
@@ -29,6 +31,7 @@ const Checkout = () => {
   const [purchase, { data, isSuccess, isLoading }] = usePurchaseMutation()
   const { items } = useSelector((state: RootReducer) => state.cart)
   const [installments, setInstallMents] = useState<Installment[]>([])
+  const dispatch = useDispatch()
 
   const totalPrice = getTotalPrice(items)
 
@@ -138,12 +141,10 @@ const Checkout = () => {
             }
           }
         },
-        products: [
-          {
-            id: 1,
-            price: 10
-          }
-        ]
+        products: items.map((item) => ({
+          id: item.id,
+          price: item.prices.current as number
+        }))
       })
     }
   })
@@ -173,7 +174,13 @@ const Checkout = () => {
     }
   }, [totalPrice])
 
-  if (items.length === 0) {
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(clear())
+    }
+  }, [isSuccess, dispatch])
+
+  if (items.length === 0 && !isSuccess) {
     return <Navigate to="/" />
   }
 
@@ -197,7 +204,7 @@ const Checkout = () => {
               ativação do jogo
             </p>
             <p className="margin-top">
-              Se você optou pelo pagamento com cartão de creedito a liberação do
+              Se você optou pelo pagamento com cartão de credito a liberação do
               codigo de ativação ocorrerá após a aprovação da transação. Você
               recebera o código no e-mail cadastrado em nossa loja.
             </p>
@@ -367,7 +374,7 @@ const Checkout = () => {
                         <label htmlFor="cardNumber">Numero do cartão</label>
                         <InputMask
                           id="cardNumber"
-                          type="number"
+                          type="text"
                           name="cardNumber"
                           value={form.values.cardNumber}
                           onChange={form.handleChange}
@@ -438,7 +445,10 @@ const Checkout = () => {
                           }
                         >
                           {installments.map((installment) => (
-                            <option key={installment.quantaty}>
+                            <option
+                              value={installment.quantaty}
+                              key={installment.quantaty}
+                            >
                               {installment.quantaty}x de{' '}
                               {installment.formatTedAmount}
                             </option>
